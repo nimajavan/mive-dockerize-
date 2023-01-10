@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+
+  database:
+    container_name: database
+    image: postgres
+    env_file:
+      - ./db-env.txt
+    volumes:
+      - postgres:/var/lib/postgresql/database
+    restart: always
+
+
+  app:
+    build:
+      context: .
+    image: app
+    container_name: django_app
+    command: sh -c "python manage.py migrate && gunicorn mive.wsgi:application --bind 0.0.0.0:8000"
+    volumes:
+      - static:/usr/src/app/static
+      - media:/usr/src/app/media
+    depends_on:
+      - database
+    env_file:
+      - ./com-env.txt
+
+  nginx:
+    image: nginx
+    container_name: nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - app
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+      - static:/var/www/static
+      - media:/var/www/media
+
+  redis:
+    image: redis
+    container_name: redis
+    ports:
+      - "6379:6379"
+
+  celery:
+    build:
+      context: .
+    image: celery
+    container_name: celery
+    command: celery -A mive worker -l INFO
+    depends_on:
+      - redis
+      - database
+
+
+volumes:
+  postgres:
+  static:
+  media:
+
+    
