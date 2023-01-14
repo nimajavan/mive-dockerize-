@@ -14,6 +14,34 @@ class ProductListSerializer(serializers.ModelSerializer):
     id = serializers.SerializerMethodField(read_only=True)
     image = serializers.SerializerMethodField('get_image_url')
     tags = ProductTagsSerializers(many=True, read_only=True)
+    views = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = Product
+        depth = 1
+        fields = ['id', 'name', 'image', 'available', 'category',
+                  'price', 'special_offer', 'total_like', 'tags', 'views']
+
+    def get_views(self, obj):
+        try:
+            view = self.context.get('views_dic')
+            return view[str(obj.id)]
+        except:
+            return '0'
+
+    def get_id(self, obj):
+        return obj.id
+
+    def get_image_url(self, obj):
+        request = self.context.get('request')
+        image = obj.image.url
+        return request.build_absolute_uri(image)
+
+
+class ProductListInInfoSerializer(serializers.ModelSerializer):
+    id = serializers.SerializerMethodField(read_only=True)
+    image = serializers.SerializerMethodField('get_image_url')
+    tags = ProductTagsSerializers(many=True, read_only=True)
 
     class Meta:
         model = Product
@@ -31,12 +59,14 @@ class ProductListSerializer(serializers.ModelSerializer):
 
 
 class ProductInfoSerializer(serializers.ModelSerializer):
-    product = ProductListSerializer(many=False)
+    product = ProductListInInfoSerializer(many=False)
+    views = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = ProductInfo
         fields = [
             'product',
+            'views',
             'text',
             'english_name',
             'weight',
@@ -47,6 +77,9 @@ class ProductInfoSerializer(serializers.ModelSerializer):
             'fat',
             'how_to_use',
         ]
+    
+    def get_views(self, obj):
+        return self.context.get('views')
 
 
 class ProductCommentSerializer(serializers.ModelSerializer):

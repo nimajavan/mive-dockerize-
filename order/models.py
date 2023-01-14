@@ -1,6 +1,8 @@
 from django.db import models
 from account.models import User
 from product.models import Product
+from django.contrib import admin
+from jalali_date import datetime2jalali
 
 
 class Order(models.Model):
@@ -21,6 +23,9 @@ class Order(models.Model):
 
     def __str__(self):
         return str(self.user.phone)
+
+    def shamsi_date_time(self):
+        return datetime2jalali(self.create)
 
     def total_price(self):
         price = sum(item.price() for item in self.order_item.all())

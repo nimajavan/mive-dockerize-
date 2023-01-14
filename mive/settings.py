@@ -12,11 +12,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-j%#v37j6k#(zm*9jn)hq)%=zzg#wu$k^3nl6^+e!5uh%q7-q2('
 
-DEBUG = int(os.environ.get("DEBUG", default=0))
+DEBUG = int(os.environ.get("DEBUG", default=1))
 
 # 'DJANGO_ALLOWED_HOSTS' should be a single string of hosts with a space between each.
-# For example: 'DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]'
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
+# For example: 'DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]'\
+\
+# prod
+# ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
+
+# debug
+ALLOWED_HOSTS = ['*']
 
 
 INSTALLED_APPS = [
@@ -145,15 +150,18 @@ USE_I18N = True
 
 USE_TZ = True
 
+#host address
+HOST_ADDRESS = 'http://127.0.0.1:8000'
 
-STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles/'
-# STATIC_ROOT = BASE_DIR / "static"
-MEDIA_ROOT = BASE_DIR / 'mediafiles/'
+STATIC_URL = 'static/'
+# STATIC_ROOT = BASE_DIR / "static/"
+MEDIA_ROOT = BASE_DIR / 'media/'
 MEDIA_URL = '/media/'
-# STATICFILES_DIRS = [
-#     BASE_DIR / "staticfiles",
-# ]
+
+# debug mode
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
 
 CSRF_TRUSTED_ORIGINS = ["http://l127.0.0.1:3000", "http://127.0.0.1:8000", "http://127.0.0.1:80"]
 
@@ -175,6 +183,11 @@ CELERY_TIMEZONE = 'Africa/Nairobi'
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 CELERY_SERIALIZER = 'json'
 
+
+#payment-config
+CONTEXNT_TYPE = 'application/json'
+X_API_KEY = '6a7f99eb-7c20-4412-a972-6dfb7cd253a4'
+X_SANDBOX = '1'
 
 # JWT
 SIMPLE_JWT = {
@@ -285,3 +298,7 @@ CKEDITOR_5_CONFIGS = {
         }
     }
 }
+
+REDIS_HOST = '127.0.0.1'
+REDIS_PORT = 6379
+REDIS_DB = 0

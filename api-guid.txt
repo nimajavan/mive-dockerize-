@@ -1,0 +1,122 @@
+{ account
+    --------
+    # ارسال کد تایید - مرحله اول ثبت نام
+    url:/api/v1/phone_register/
+    method: POST
+    data-need:{
+        phone
+    }
+    Respone:{
+        success: {'success': 'کد تایید با موفقیت ارسال شد'}
+        error: {'error': 'متاسفانه مشکلی پیش اومد, لطفا دوباره امتحان کن'}
+    }
+    ----------
+    # ثبت نام کاربر- مرحله دوم
+    url:api/v1/register/
+    method: POST
+    data-need:{چیزی نیاز نیست کل داده ها از کوکی ها خوانده میشود}
+    Respone:{
+        success: {
+        "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTY3MzcwMDM5NywiaWF0IjoxNjczNjEzOTk3LCJqdGkiOiIzZGFhMzg0OWQ3YWQ0NDVjOWY0N2RiYzU0NzA4MTJhOSIsInVzZXJfaWQiOjZ9.Ux7rdhCUN_3cp8WM09Y61S73yRtuX_OvVvrKVveG30U",
+        "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjczNzAwMzk3LCJpYXQiOjE2NzM2MTM5OTcsImp0aSI6IjUwYjE1MjZlM2U5NTQwZTRiMjMzYzNiM2RlMWU0OTI4IiwidXNlcl9pZCI6Nn0.A8GLc0EI3UiejqV_MacCK-RieCnoX_IEiQAMCyBthj4",
+        "id": 6,
+        "phone": 11111111111,
+        "is_admin": true,
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjczNzAwMzk3LCJpYXQiOjE2NzM2MTM5OTcsImp0aSI6IjYzNmUxYTc5MzY2NzQ4OThhNjYxMjA4OTMyMjYxZWIwIiwidXNlcl9pZCI6Nn0.XMBE-4sna3jUR4kMkmkKh7btE6pdOEM02FNhcA0mZWU"
+        }
+        error:{
+            {'error': ' کد وارد شده اشتباه است'}
+        }
+    -----------
+    # لاگین کاربر
+    url:/api/v1/login/
+    method: POST
+    data-need:{
+        phone
+    }
+    Respone:{
+        success: {
+            "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTY3MzcwMDM5NywiaWF0IjoxNjczNjEzOTk3LCJqdGkiOiIzZGFhMzg0OWQ3YWQ0NDVjOWY0N2RiYzU0NzA4MTJhOSIsInVzZXJfaWQiOjZ9.Ux7rdhCUN_3cp8WM09Y61S73yRtuX_OvVvrKVveG30U",
+            "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjczNzAwMzk3LCJpYXQiOjE2NzM2MTM5OTcsImp0aSI6IjUwYjE1MjZlM2U5NTQwZTRiMjMzYzNiM2RlMWU0OTI4IiwidXNlcl9pZCI6Nn0.A8GLc0EI3UiejqV_MacCK-RieCnoX_IEiQAMCyBthj4",
+            "id": 6,
+            "phone": 11111111111,
+            "is_admin": true,
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjczNzAwMzk3LCJpYXQiOjE2NzM2MTM5OTcsImp0aSI6IjYzNmUxYTc5MzY2NzQ4OThhNjYxMjA4OTMyMjYxZWIwIiwidXNlcl9pZCI6Nn0.XMBE-4sna3jUR4kMkmkKh7btE6pdOEM02FNhcA0mZWU"
+            }
+        error: {'error': 'نام کاربری یا رمز عبور صحیح نیست}
+    }
+    --------------
+    # آبدیت پروفایل کاربر
+    url:/api/v1/update_profile/
+    method: POST or PUT
+    data-need:{
+        name
+        last_name
+        profile_image
+    }
+    Respone:{
+        success: {
+            user
+            name
+            last_name
+            profile_image
+        }
+        error: {'error': 'متاسفانه مشکلی پیش اومد, لطفا دوباره امتحان کن'}
+    }
+}
+
+
+
+
+{
+    order
+    # نمایش و ایجاد سفارش خرید
+    url:/api/v1/add_order/
+
+    method: POST
+    data-need:{
+        name
+        last_name
+        address
+        delivery_date
+        postal_code
+        cart_item[{product_id, quantity}]
+    }
+    Respone:{
+        success: {'success': 'کد تایید با موفقیت ارسال شد'}
+        error: {'error': 'متاسفانه مشکلی پیش اومد, لطفا دوباره امتحان کن'}
+    }
+
+    method: GET
+    data-need:{
+        {چیزی نیاز نیست کل داده ها از کوکی ها خوانده میشود}
+    }
+    Respone:{
+        success: [
+    {
+        "id": 1,
+        "order_item": [
+            {
+                "id": 6,
+                "user_id": 6,
+                "product_id": 1,
+                "quantity": 4
+            }
+        ],
+        "price": 1600000,
+        "paid": true,
+        "create": "2023-01-05T11:33:48.660484Z",
+        "discount": null,
+        "first_name": "نیما",
+        "last_name": "جوان",
+        "phone": 9141883291,
+        "address": "lk",
+        "postal_code": 613513535,
+        "delivery_date": "788",
+        "sent": false,
+        "user": 6
+    }
+]
+        error: {'error': 'متاسفانه مشکلی پیش اومد, لطفا دوباره امتحان کن'}
+    }
+}

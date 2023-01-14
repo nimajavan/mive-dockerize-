@@ -13,23 +13,22 @@ class Ticket(models.Model):
     user = models.ForeignKey(
         User, null=True, blank=True, on_delete=models.CASCADE, verbose_name='کاربر')
     status = models.CharField(
-        max_length=25, choices=TicketStatus.choices, default=TicketStatus.IN_PROGRESS, verbose_name='وضعیت')
+        max_length=25, choices=TicketStatus.choices, default=TicketStatus.IN_PROGRESS, verbose_name='وضعیت', db_index=True)
     body = models.TextField(verbose_name='متن تیکت')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField('updated at', auto_now=True)
-    persian_calender_created = models.DateTimeField()
-    persian_calender_updated = models.DateTimeField()
 
     def __str__(self):
         return str(self.title)
 
-    def persian_calender_created(self):
+    def shamsi_date_created(self):
         return datetime2jalali(self.created_at)
 
-    def persian_calender_updated(self):
+    def shamsi_date_updated(self):
         return datetime2jalali(self.updated_at)
 
     class Meta:
+        ordering = ['-created_at']
         verbose_name = 'تیکت'
         verbose_name_plural = 'تیکت ها'
 

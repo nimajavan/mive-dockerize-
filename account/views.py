@@ -11,6 +11,8 @@ from .tasks import send_sms_code
 from django.http import JsonResponse
 from ticket.models import Ticket
 from order.models import Order
+from django.db import connections
+from random import randint
 
 
 class MyCreatorTokenSerializer(TokenObtainPairSerializer):
@@ -58,7 +60,7 @@ class SetupProfile(APIView):
 @api_view(http_method_names=['POST'])
 def phone_register(request):
     data = request.data
-    random_code = 333
+    random_code = randint(100, 10000)
     phone = f'0{data["phone"]}'
     request.session['random_code'] = random_code
     request.session['phone'] = phone
@@ -71,23 +73,39 @@ def phone_register(request):
 
 
 @api_view(http_method_names=['GET'])
-def phone_r(request):
-    r = request.session.get('phone')
-    p = {'p': r}
-    return JsonResponse(p)
-
-
-@api_view(http_method_names=['GET'])
 def admin_panel_information(request):
-    ticket = Ticket.objects.filter(status='In Progress').count()
     order = Order.objects.filter(paid=True, sent=False).count()
+    ticket = Ticket.objects.filter(status='In Progress').count()
     total_paid = Order.objects.filter(paid=True)
     price = 0
-    for t_p in total_paid:
+    for t_p in total_paid.iterator():
         price += t_p.total_price()
     context = {
         'ticket': ticket,
         'order': order,
         'total_paid': price
     }
+
+    # ajax method
+    state = request.GET.get('state')
+    is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+    if is_ajax:
+        match state:
+            case 1:
+                order = Order.objects.filter(paid=True, sent=False).count()
+                context = {'order': order}
+            case 2:
+                ticket = Ticket.objects.filter(status='In Progress').count()
+                context = {'ticket': ticket}
+            case 3:
+                total_paid = Order.objects.filter(paid=True)
+                price = 0
+                for t_p in total_paid.iterator():
+                    price += t_p.total_price()
+                context = {'total_paid': price}
+
+    # query timimg check
+    # for query in connections['default'].queries:
+    #     print(query, query['time'])
+
     return Response(context)

@@ -10,7 +10,7 @@ from .serializers import OrderSerializers
 import requests as req
 import json
 from django.views.decorators.csrf import csrf_exempt
-
+from django.conf import settings
 
 class GetOrderItem(APIView):
 
@@ -32,14 +32,15 @@ class GetOrderItem(APIView):
 
 
 @api_view(http_method_names=['POST'])
+@permission_classes([IsAuthenticated])
 def create_payment_url(request):
     try:
         data = request.data
         order = Order.objects.get(id=data['order_id'])
         headers = {
-            'Content-Type': 'application/json',
-            'X-API-KEY': '6a7f99eb-7c20-4412-a972-6dfb7cd253a4',
-            'X-SANDBOX': '1',
+            'Content-Type': settings.CONTEXNT_TYPE,
+            'X-API-KEY': settings.X_API_KEY,
+            'X-SANDBOX': settings.X_SANDBOX,
         }
 
         payload = {
@@ -49,7 +50,7 @@ def create_payment_url(request):
             'phone': order.phone,
             'mail': 'test@gmail.com',
             'desc': 'test_desc',
-            'callback': 'http://localhost:8000/api/v1/verify_peyment/'
+            'callback': f'{settings.HOST_ADDRESS}/api/v1/verify_peyment/'
         }
 
         record = PaymentHistory.objects.create(
@@ -93,9 +94,9 @@ def payment_return(request):
 
         if str(status) == '10':
             headers = {
-                'Content-Type': 'application/json',
-                'X-API-KEY': '6a7f99eb-7c20-4412-a972-6dfb7cd253a4',
-                'X-SANDBOX': '1',
+                'Content-Type': settings.CONTEXNT_TYPE,
+                'X-API-KEY': settings.X_API_KEY,
+                'X-SANDBOX': settings.X_SANDBOX,
             }
             payload = {
                 'id': pid,
@@ -139,9 +140,9 @@ def payment_check(request):
 
         payment = PaymentHistory.objects.get(pk=pk)
         headers = {
-            'Content-Type': 'application/json',
-            'X-API-KEY': '6a7f99eb-7c20-4412-a972-6dfb7cd253a4',
-            'X-SANDBOX': '1',
+            'Content-Type': settings.CONTEXNT_TYPE,
+            'X-API-KEY': settings.X_API_KEY,
+            'X-SANDBOX': settings.X_SANDBOX,
         }
         payload = {
             'id': payment.payment_id,

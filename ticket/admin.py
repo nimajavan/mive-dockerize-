@@ -10,7 +10,7 @@ class TicketAdmin(admin.ModelAdmin):
     list_display = ['id', 'title',
                     'user',
                     'status',
-                    'persian_calender_created', 'persian_calender_updated']
+                    'shamsi_date_created', 'shamsi_date_updated']
 
     inlines = [ReplyTickerInine]
     list_filter = ['status']

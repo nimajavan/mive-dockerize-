@@ -1,7 +1,7 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
-from django.db.models.signals import post_save
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from PIL import Image
+from django.contrib.auth.models import Group
 
 
 class UserManager(BaseUserManager):
@@ -22,7 +22,7 @@ class UserManager(BaseUserManager):
         return user
 
 
-class User(AbstractBaseUser):
+class User(AbstractBaseUser, PermissionsMixin):
     phone = models.IntegerField(
         unique=True, verbose_name='شماره همراه')
     is_active = models.BooleanField(default=False, verbose_name='فعال')
@@ -41,10 +41,6 @@ class User(AbstractBaseUser):
 
     def has_module_perms(self, app_label):
         return True
-
-    def get_all_permissions(user=None):
-        if user.is_admin:
-            return set()
 
     @property
     def is_staff(self):

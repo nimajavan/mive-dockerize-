@@ -34,13 +34,9 @@ class Product(models.Model):
         default=False, verbose_name='پیشنهاد شگفت انگیز')
     like = models.ManyToManyField(
         User, blank=True, verbose_name='تعداد لایک ها')
-    total_like = models.PositiveIntegerField(verbose_name='تعداد لایک ها')
-    views = models.BigIntegerField(default=0, verbose_name='تعداد بازید ها')
+    total_like = models.PositiveIntegerField(verbose_name='تعداد لایک ها', default=0)
     slug = models.SlugField(
         allow_unicode=True, unique=True, null=True, blank=True)
-
-    def total_like(self):
-        return self.like.count()
 
     def __str__(self):
         return self.name
@@ -105,13 +101,13 @@ class ProductComment(models.Model):
         verbose_name_plural = 'نظر کاربران'
 
 
-class ViewIpAdress(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    ip_addr = models.CharField(max_length=50)
+# class ViewIpAdress(models.Model):
+#     product = models.ForeignKey(Product, on_delete=models.CASCADE)
+#     ip_addr = models.CharField(max_length=50)
 
-    def __str__(self):
-        return self.ip_addr
+#     def __str__(self):
+#         return self.ip_addr
 
-    class Meta:
-        verbose_name = 'آی پی کاربر'
-        verbose_name_plural = 'آی پی کاربران'
+#     class Meta:
+#         verbose_name = 'آی پی کاربر'
+#         verbose_name_plural = 'آی پی کاربران'

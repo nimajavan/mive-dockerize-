@@ -5,69 +5,90 @@ from rest_framework.response import Response
 from .serializers import *
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
+import redis
+from django.conf import settings
+from django.db import connections
+from rest_framework import status
 
+r = redis.Redis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, decode_responses=True)
 
 @api_view(http_method_names=['GET'])
 def get_product_list(request):
-    products = Product.objects.all()
-    serializer = ProductListSerializer(
-        products, many=True, context={"request": request})
-    return Response(serializer.data)
+    try:
+        products = Product.objects.all()
+        try:
+            view_dic = {}
+            for key in r.keys('image*'):
+                view_dic[key.split(':')[1]] = f'{r.get(key)}'
+        except:
+            pass
+        serializer = ProductListSerializer(
+            products, many=True, context={"request": request, 'views_dic': view_dic})
+        return Response(serializer.data)
+    except:
+        return Response({'status':'bad request'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(http_method_names=['GET'])
-def get_product_info(request, slug):
-    ip = request.META.get('REMOTE_ADDR')
-    data = request.data
-    viewChacker = view_checker(ip, data['id'])
-    product = ProductInfo.objects.get(
-        product_id=data['id'], product__slug=slug)
-    if viewChacker:
-        product_view = Product.objects.get(id=data['id'])
-        product_view.views += 1
-        product_view.save()
+def get_product_info(request, slug, id):
+    try:
+        viewChacker = view_checker(id)
+        product = ProductInfo.objects.get(
+            product_id=id, product__slug=slug)
+        seializer = ProductInfoSerializer(
+            product, many=False, context={"request": request, 'views': viewChacker})
+    except:
+        return Response({'status':'bad request'}, status=status.HTTP_400_BAD_REQUEST)
 
-    seializer = ProductInfoSerializer(
-        product, many=False, context={"request": request})
+    # query timinig (debug)    
+    for query in connections['default'].queries:
+        print (f'{query} ====> {query["time"]}')
     return Response(seializer.data)
 
 
 @api_view(http_method_names=['GET'])
 def get_product_comments(request):
-    data = request.data
-    comments = ProductComment.objects.filter(
-        product_id=data['id'], status='done')
-    serializer = ProductCommentSerializer(comments, many=True)
-    return Response(serializer.data)
+    try:
+        data = request.data
+        comments = ProductComment.objects.filter(
+            product_id=data['id'], status='done')
+        serializer = ProductCommentSerializer(comments, many=True)
+        return Response(serializer.data)
+    except:
+        return Response({'status':'bad request'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(http_method_names=['POST'])
 @permission_classes([IsAuthenticated])
 def send_comment(request):
-    data = request.data
-    commnet = ProductComment.objects.create(
+    try:
+        data = request.data
+        commnet = ProductComment.objects.create(
         product_id=data['id'], user_id=request.user.id, body=data['body'])
-    commnet.save()
-    return Response(ProductCommentSerializer(commnet, many=False).data)
+        commnet.save()
+        return Response(ProductCommentSerializer(commnet, many=False).data)
+    except:
+        return Response({'status':'bad request'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class Like(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        data = request.data
-        product = get_object_or_404(Product, id=data['id'])
-        if product.like.filter(id=request.user.id).exists():
-            product.like.remove(request.user)
-        else:
-            product.like.add(request.user)
+        try:
+            data = request.data
+            product = get_object_or_404(Product, id=data['id'])
+            if product.like.filter(id=request.user.id).exists():
+                product.like.remove(request.user)
+            else:
+                product.like.add(request.user)
 
-        return Response(ProductListSerializer(product, many=False).data)
+            return Response({'status':'ok'}, status=status.HTTP_200_OK)
+        except:
+            return Response({'status':'bad request'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-def view_checker(ip, p_id):
-    if ViewIpAdress.objects.filter(product_id=p_id, ip_addr=ip).exists():
-        return False
-    else:
-        ViewIpAdress.objects.create(product_id=p_id, ip_addr=ip)
-        return True
+
+def view_checker(p_id):
+    total_views = r.incr(f'image:{p_id}:views')
+    return total_views

@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import User, Profile, UserAddress
+from django.contrib.auth.admin import UserAdmin as UserAdminGroup
 
 
 class ProfileInline(admin.StackedInline):
