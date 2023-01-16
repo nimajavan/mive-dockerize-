@@ -154,14 +154,15 @@ USE_TZ = True
 HOST_ADDRESS = 'http://127.0.0.1:8000'
 
 STATIC_URL = 'static/'
-# STATIC_ROOT = BASE_DIR / "static/"
+if DEBUG == 1:
+    STATICFILES_DIRS = [
+        BASE_DIR / "static",
+    ]
+else:
+    STATIC_ROOT = BASE_DIR / "static/"
+
 MEDIA_ROOT = BASE_DIR / 'media/'
 MEDIA_URL = '/media/'
-
-# debug mode
-STATICFILES_DIRS = [
-    BASE_DIR / "static",
-]
 
 CSRF_TRUSTED_ORIGINS = ["http://l127.0.0.1:3000", "http://127.0.0.1:8000", "http://127.0.0.1:80"]
 

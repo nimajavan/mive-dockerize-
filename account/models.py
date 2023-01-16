@@ -18,6 +18,7 @@ class UserManager(BaseUserManager):
         user = self.create_user(phone, password)
         user.is_active = True
         user.is_admin = True
+        user.is_staff = True
         user.save(using=self._db)
         return user
 
@@ -27,6 +28,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         unique=True, verbose_name='شماره همراه')
     is_active = models.BooleanField(default=False, verbose_name='فعال')
     is_admin = models.BooleanField(default=False, verbose_name='ادیمن')
+    is_staff = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'phone'
     REQUIRED_FIELDS = []
@@ -41,10 +43,6 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def has_module_perms(self, app_label):
         return True
-
-    @property
-    def is_staff(self):
-        return self.is_admin
 
     class Meta:
         verbose_name = 'کاربران'
@@ -71,13 +69,14 @@ class Profile(models.Model):
     # def save(self, *args, **kwargs):
     #     super().save()
 
-    #     img = Image.open(self.profile_image.path)
-    #     print(img)
+    #     if self.profile_iamge.path:
+    #         img = Image.open(self.profile_image.path)
+    #         print(img)
 
-    #     if img.height > 500 or img.width > 500:
-    #         new_img = (500, 500)
-    #         img.thumbnail(new_img)
-    #         img.save(self.profile_image.path)
+    #         if img.height > 500 or img.width > 500:
+    #             new_img = (500, 500)
+    #             img.thumbnail(new_img)
+    #             img.save(self.profile_image.path)
 
 
 class UserAddress(models.Model):

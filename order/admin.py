@@ -23,6 +23,26 @@ class OrderAdmin(admin.ModelAdmin):
 
     inlines = [OrderItemInline]
 
+    def has_view_permission(self, request, obj=None):
+        if request.user.is_admin:
+            return True
+        return request.user.groups.filter(name='order_permission').exists()
+
+    def has_add_permission(self, request):
+        if request.user.is_admin:
+            return True
+        return request.user.groups.filter(name='order_permission').exists()
+
+    def has_change_permission(self, request, obj=None):
+        if request.user.is_admin:
+            return True
+        return request.user.groups.filter(name='order_permission').exists()
+
+    def has_delete_permission(self, request, obj=None):
+        if request.user.is_admin:
+            return True
+        return request.user.groups.filter(name='order_permission').exists()
+
     
 
 

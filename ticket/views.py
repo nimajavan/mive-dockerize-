@@ -22,6 +22,7 @@ def create_ticket(request):
 @api_view(http_method_names=['GET'])
 @permission_classes([IsAuthenticated])
 def show_all_ticket(request):
+    print(request.user.groups.filter(name='ticket-admin').exists())
     try:
         ticket = Ticket.objects.filter(user=request.user.id)
         serializer = TicketSerializers(ticket, many=True)
