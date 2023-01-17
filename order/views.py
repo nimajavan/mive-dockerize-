@@ -12,6 +12,7 @@ import json
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 
+
 class GetOrderItem(APIView):
 
     permission_classes = [IsAuthenticated]
@@ -106,7 +107,6 @@ def payment_return(request):
             r = req.post('https://api.idpay.ir/v1.1/payment/verify',
                          headers=headers, data=json.dumps(payload))
             result = r.json()
-            print(result)
 
             if 'status' in result:
 
@@ -117,7 +117,7 @@ def payment_return(request):
                 if result['status'] == 100:
                     order.paid = True
                     order.save()
-                return Response({'status': result['status']})
+                return render(request, 'order/return_payment.html', {'status': result['status'], 'bank_track_id': payment.bank_track_id})
 
             else:
                 txt = result['status']
@@ -130,7 +130,7 @@ def payment_return(request):
     else:
         txt = "Order Not Found"
 
-    return Response({'status': txt})
+    return render(request, 'order/return_payment.html', {'status': txt})
 
 
 @api_view(http_method_names=['POST'])

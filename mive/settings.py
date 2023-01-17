@@ -16,7 +16,7 @@ DEBUG = int(os.environ.get("DEBUG", default=1))
 
 # 'DJANGO_ALLOWED_HOSTS' should be a single string of hosts with a space between each.
 # For example: 'DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]'\
-\
+
 # prod
 # ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
 
@@ -151,7 +151,10 @@ USE_I18N = True
 USE_TZ = True
 
 #host address
-HOST_ADDRESS = 'http://127.0.0.1:8000'
+if DEBUG == 1:
+    HOST_ADDRESS = 'http://127.0.0.1:8000'
+else:
+    HOST_ADDRESS = os.environ.get('HOST_ADDRESS')
 
 STATIC_URL = 'static/'
 if DEBUG == 1:
@@ -164,15 +167,20 @@ else:
 MEDIA_ROOT = BASE_DIR / 'media/'
 MEDIA_URL = '/media/'
 
-CSRF_TRUSTED_ORIGINS = ["http://l127.0.0.1:3000", "http://127.0.0.1:8000", "http://127.0.0.1:80"]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CORS_ALLOWED_ORIGINS = [
+if DEBUG == 1:
+    CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
 
-]
+    ]
+    CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:3000", "http://127.0.0.1:8000", "http://127.0.0.1:80"]
+else:
+    CORS_ALLOWED_ORIGINS = os.environ.get('DJANGO_CORS_ALLOWED_ORIGINS').split(" ")
+    CSRF_TRUSTED_ORIGINS = os.environ.get('DJANGO_CSRF_TRUSTED_ORIGINS').split(" ")
+
 
 # CELERY STUFF
 CELERY_BROKER_URL = 'redis://redis:6379'
@@ -300,6 +308,12 @@ CKEDITOR_5_CONFIGS = {
     }
 }
 
-REDIS_HOST = '127.0.0.1'
-REDIS_PORT = 6379
-REDIS_DB = 0
+if DEBUG == 1:
+    REDIS_HOST = '127.0.0.1'
+    REDIS_PORT = 6379
+    REDIS_DB = 0
+else:
+    REDIS_HOST = 'redis'
+    REDIS_PORT = 6379
+    REDIS_DB = 0
+
