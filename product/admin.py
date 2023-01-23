@@ -19,7 +19,15 @@ class ProductAdmin(admin.ModelAdmin):
         'price',
         'special_offer',
         'total_like',
+        'total_view',
         'slug',
+    ]
+    list_filter = [
+        'available',
+        'total_like'
+    ]
+    search_fields = [
+        'name'
     ]
     prepopulated_fields = {
         'slug': ('name',)
@@ -49,7 +57,23 @@ class ProductAdmin(admin.ModelAdmin):
         return request.user.groups.filter(name='product_permission').exists()
 
 
+class ProductCommentAdmin(admin.ModelAdmin):
+    list_display = [
+        'product',
+        'user',
+        'status',
+        'shamsi_date_time'
+    ]
+
+    list_filter = [
+        'status'
+    ]
+
+    def shamsi_date_time(self, obj):
+        return obj.shamsi_date_time()
+
 admin.site.register(Product, ProductAdmin)
 admin.site.register(ProductInfo)
 admin.site.register(Category)
-admin.site.register(ProductComment)
+admin.site.register(ProductComment, ProductCommentAdmin)
+admin.site.register(ViewIpAdress)

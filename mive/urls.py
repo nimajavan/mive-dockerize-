@@ -11,6 +11,7 @@ urlpatterns = [
     path('api/v1/', include('order.urls', namespace='order')),
     path('api/v1/', include('ticket.urls', namespace='ticket')),
 ]
-urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL,
-                                                                                        document_root=settings.
-                                                                                        MEDIA_ROOT)
+if settings.DEBUG:
+    urlpatterns += [path('api-auth/', include('rest_framework.urls')),]
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

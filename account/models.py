@@ -24,7 +24,7 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-    phone = models.IntegerField(
+    phone = models.BigIntegerField(
         unique=True, verbose_name='شماره همراه')
     is_active = models.BooleanField(default=False, verbose_name='فعال')
     is_admin = models.BooleanField(default=False, verbose_name='ادیمن')
@@ -51,7 +51,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 class Profile(models.Model):
     user = models.OneToOneField(
-        User, on_delete=models.CASCADE, verbose_name='کاربر')
+        User, on_delete=models.CASCADE, verbose_name='کاربر', related_name='profile')
     name = models.CharField(max_length=100, null=True,
                             blank=True, verbose_name='نام')
     last_name = models.CharField(

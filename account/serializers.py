@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import User, Profile
 from rest_framework_simplejwt.tokens import RefreshToken
-
+from django.contrib.auth.password_validation import validate_password
 
 class UserSerializer(serializers.ModelSerializer):
     id = serializers.SerializerMethodField(read_only=True)
@@ -39,13 +39,28 @@ class UserSerializerWithToken(serializers.ModelSerializer):
 
 
 class ProfileSerializers(serializers.ModelSerializer):
-    profile_image = serializers.SerializerMethodField('get_photo_url')
-
     class Meta:
         model = Profile
-        fields = '__all__'
+        fields = [
+            'name',
+            'last_name',
+            'profile_image'
+        ]
 
-    def get_photo_url(self, obj):
-        request = self.context.get('request')
-        image = obj.profile_image.url
-        return request.build_absolute_uri(image)
+
+class ChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(required = True)
+    password = serializers.CharField(required = True, validators=[validate_password])
+    password_2 = serializers.CharField(required = True)
+
+    def validate(self, attrs):
+        if attrs['password'] != attrs['password_2']:
+            raise serializers.ValidationError({'status': 'پسورد ها همخوانی ندارند'})
+        return attrs
+
+    def validate_old_password(self, value):
+        user = self.context['request'].user
+        if not user.check_password(value):
+            raise serializers.ValidationError({'status':'پسورد قدیمی همخوانی ندارد'})
+        return value
+

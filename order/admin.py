@@ -12,12 +12,28 @@ class OrderAdmin(admin.ModelAdmin):
         'user',
         'paid',
         'discount',
+        'price',
         'first_name',
         'last_name',
         'phone',
         'sent',
         'shamsi_date',
     ]
+
+    list_filter = [
+        'paid',
+        'sent',
+    ]
+
+    search_fields = [
+        'user__phone',
+        'phone'
+    ]
+
+    def price(self, obj):
+        return obj.total_price()
+
+
     def shamsi_date(self, obj):
         return obj.shamsi_date_time()
 
@@ -43,8 +59,18 @@ class OrderAdmin(admin.ModelAdmin):
             return True
         return request.user.groups.filter(name='order_permission').exists()
 
-    
 
+@admin.register(Coupon)
+class CouponAdmin(admin.ModelAdmin):
+    list_display = [
+        'code',
+        'active',
+        'start',
+        'end',
+        'discount'
+    ]
+
+    list_filter = ['active']
 
 
 admin.site.register(Order, OrderAdmin)

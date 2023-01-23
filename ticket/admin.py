@@ -14,6 +14,9 @@ class TicketAdmin(admin.ModelAdmin):
 
     inlines = [ReplyTickerInine]
     list_filter = ['status']
+    search_fields = [
+        'user__phone'
+    ]
 
     def has_view_permission(self, request, obj=None):
         if request.user.is_admin:

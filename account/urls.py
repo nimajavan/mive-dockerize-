@@ -12,5 +12,6 @@ urlpatterns = [
     path('phone_register/', views.phone_register),
     path('register/', views.user_register),
     path('update_profile/', views.SetupProfile.as_view()),
+    path("change_password/", views.change_password, name="change_password"),
     path('login/', views.MyCreatorTokenView.as_view()),
 ]

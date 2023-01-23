@@ -11,6 +11,7 @@ import requests as req
 import json
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
+from django.utils import timezone
 
 
 class GetOrderItem(APIView):
@@ -26,10 +27,24 @@ class GetOrderItem(APIView):
         data = request.data
         order = Order.objects.create(
             user=request.user, first_name=data['name'], last_name=data['last_name'], phone=request.user.phone, address=data['address'], delivery_date=data['delivery_date'], postal_code=data['postal_code'])
+        if data['coupon_code']:
+            coupon_checker(data['coupon_code'], order.id)
         for cart_item in data['cart_item']:
             order_item = OrderItem.objects.create(
                 order_id=order.id, user=request.user, product_id=cart_item['product_id'], quantity=cart_item['quantity'])
         return Response(OrderSerializers(order, many=False).data)
+
+def coupon_checker(code, order_id):
+    try:
+        coupun = Coupon.objects.get(code=code)
+        now_time = timezone.now()
+        if now_time >= coupun.start and now_time <= coupun.end:
+            order = Order.objects.get(id=order_id)
+            order.discount = coupun.discount
+            order.save()
+    except:
+        return Response({'error':'چنین توکنی موجود نیست'})
+
 
 
 @api_view(http_method_names=['POST'])

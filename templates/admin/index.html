@@ -84,7 +84,7 @@
             <div class="card shadow-sm border-0">
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
-                        <h3 class="text-muted fs-4">سفارشات</h3>
+                        <h3 class="text-muted fs-4">نظرات تایید نشده</h3>
                         <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-eye-fill text-primary" viewBox="0 0 16 16">
                             <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
                             <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
@@ -92,9 +92,9 @@
                     </div>
                     
                     <div class="text-end text-muted fs-4">
-                        <p>134</p>
+                        <p id="comments"></p>
                     </div>
-                    <button id="sync_admin_btn" type="button" class="btn btn-warning">
+                    <button id="sync_admin_btn_comment" type="button" class="btn btn-warning">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-repeat" viewBox="0 0 16 16">
                             <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z"></path>
                             <path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z"></path>
@@ -151,10 +151,11 @@
             crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
     $(document).ready( async function(){
-        const {data} = await axios.get('http://127.0.0.1:8000/api/v1/get_admin_information/')
+        const {data} = await axios.get('http://127.0.0.1:80/api/v1/get_admin_information/')
         $('#order').html(data.order)
         $('#ticket').html(data.ticket)
         $('#total_paid').html(data.total_paid)
+        $('#comments').html(data.comments)
     })
 
     $('#sync_admin_btn_order').on('click', function(e){
@@ -190,6 +191,20 @@
             data: {state: 3},
             success: function(result){
                 $('#total_paid').html(result.total_paid)
+            }
+        })
+    })
+    $('#sync_admin_btn_comment').on('click', function(e){
+        $.get({
+            url:'{% url "account:get_admin_information" %}',
+            headers: {
+                "X-Requested-With": "XMLHttpRequest",
+              },
+            data: {state: 4
+            
+            },
+            success: function(result){
+                $('#comments').html(result.comments)
             }
         })
     })
