@@ -1,6 +1,6 @@
 from django.db import models
 from account.models import User
-from django_ckeditor_5.fields import CKEditor5Field
+from ckeditor.fields import RichTextField
 from jalali_date import datetime2jalali
 
 
@@ -62,7 +62,7 @@ class Product(models.Model):
 
 class ProductInfo(models.Model):
     product = models.OneToOneField(Product, on_delete=models.CASCADE)
-    text = CKEditor5Field('متن توضیحات محصول', config_name='extends')
+    text = RichTextField('متن توضیحات محصول')
     english_name = models.CharField(
         max_length=255, verbose_name='اسم انگلیسی محصول')
     weight = models.PositiveIntegerField(verbose_name='وزن')
